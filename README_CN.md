@@ -36,7 +36,7 @@ pip install comfyui_xy
 
 ```python
 import json
-from comfyui_api import ComfyUiClient
+from comfyui_xy import ComfyUiClient
 
 # 1. 初始化客户端
 client = ComfyUiClient(url="http://127.0.0.1:8188")
@@ -72,7 +72,7 @@ for i, result in enumerate(results):
 ### 1. 初始化
 
 ```python
-from comfyui_api import ComfyUiClient
+from comfyui_xy import ComfyUiClient
 
 # 默认本地服务器 (http://127.0.0.1:8188)
 client = ComfyUiClient() 
@@ -145,6 +145,23 @@ history = client.get_history_all()
 
 # 获取节点信息
 node_info = client.get_object_info("KSampler")
+```
+
+## 异步支持
+
+你可以使用 `AsyncComfyUiClient` 进行基于 `aiohttp` 的异步操作。
+
+```python
+import asyncio
+from comfyui_xy import AsyncComfyUiClient
+
+async def main():
+    async with AsyncComfyUiClient(url="http://127.0.0.1:8188") as client:
+        # 大多数方法都是可等待的 (awaitable)
+        results = await client.process_workflow(workflow)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## 示例

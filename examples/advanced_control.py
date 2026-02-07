@@ -1,8 +1,8 @@
 import time
-from comfyui_api import ComfyUiClient
+from comfyui_xy import ComfyUiClient
 
 def main():
-    client = ComfyUiClient(server_address="127.0.0.1:8188")
+    client = ComfyUiClient(url="http://127.0.0.1:8188")
 
     # 1. Get System Stats
     print("Getting queue info...")

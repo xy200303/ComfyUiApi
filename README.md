@@ -36,7 +36,7 @@ To use this API, you need the workflow in **API Format**, which is different fro
 
 ```python
 import json
-from comfyui_api import ComfyUiClient
+from comfyui_xy import ComfyUiClient
 
 # 1. Initialize Client
 client = ComfyUiClient(url="http://127.0.0.1:8188")
@@ -72,7 +72,7 @@ for i, result in enumerate(results):
 ### 1. Initialization
 
 ```python
-from comfyui_api import ComfyUiClient
+from comfyui_xy import ComfyUiClient
 
 # Default local server (http://127.0.0.1:8188)
 client = ComfyUiClient() 
@@ -145,6 +145,23 @@ history = client.get_history_all()
 
 # Get Node Information
 node_info = client.get_object_info("KSampler")
+```
+
+## Async Support
+
+You can use `AsyncComfyUiClient` for asynchronous operations using `aiohttp`.
+
+```python
+import asyncio
+from comfyui_xy import AsyncComfyUiClient
+
+async def main():
+    async with AsyncComfyUiClient(url="http://127.0.0.1:8188") as client:
+        # Most methods are awaitable
+        results = await client.process_workflow(workflow)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## Examples

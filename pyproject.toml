@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "comfyui_xy"
-version = "0.1.9"
+version = "0.2.0"
 authors = [
   { name="小云", email="3483421977@qq.com" },
 ]
@@ -19,6 +19,7 @@ classifiers = [
 dependencies = [
     "requests",
     "Pillow",
+    "aiohttp",
 ]
 
 [project.urls]
@@ -27,4 +28,4 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["comfyui_api*"]
+include = ["comfyui_xy*"]

@@ -1,11 +1,11 @@
 import json
 import random
-from comfyui_api import ComfyUiClient
+from comfyui_xy import ComfyUiClient
 
 def main():
     # 1. Initialize Client
     # Replace with your server address
-    client = ComfyUiClient(server_address="127.0.0.1:8188")
+    client = ComfyUiClient(url="http://127.0.0.1:8188")
     
     # 2. Define a simple workflow (Text to Image)
     # This is a simplified example. In practice, load this from a JSON file.
