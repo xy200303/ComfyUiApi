@@ -5,15 +5,32 @@ import random
 from PIL import Image
 
 class ComfyResponse:
-    def __init__(self, data, filename, file_type):
+    def __init__(self, data, filename, source_type):
         self.data = data
         self.filename = filename
-        self.file_type = file_type
+        self.source_type = source_type # 'output', 'temp', etc.
+        self.file_type = self._determine_file_type()
         self.image = None
-        try:
-            self.image = Image.open(io.BytesIO(data))
-        except Exception:
-            pass
+        
+        if self.file_type == 'image':
+            try:
+                self.image = Image.open(io.BytesIO(data))
+            except Exception:
+                pass
+
+    def _determine_file_type(self):
+        """Determine file type based on extension."""
+        if not self.filename:
+            return 'unknown'
+            
+        ext = self.filename.split('.')[-1].lower()
+        if ext in ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'tiff']:
+            return 'image'
+        elif ext in ['mp4', 'mkv', 'webm', 'gif', 'avi', 'mov']:
+            return 'video'
+        elif ext in ['mp3', 'wav', 'flac', 'ogg']:
+            return 'audio'
+        return 'unknown'
 
     def save(self, path=None):
         """
@@ -37,18 +54,25 @@ class ComfyResponse:
             print(f"Cannot show non-image file: {self.filename}")
 
 class ComfyUiClient:
-    def __init__(self, server_address="127.0.0.1:8188", https=False):
+    def __init__(self, url="http://127.0.0.1:8188", server_address=None, https=False):
         """
         Initialize the ComfyUI client.
         
         Args:
-            server_address (str): The address of the ComfyUI server (e.g., "127.0.0.1:8188").
-            https (bool): Whether to use HTTPS.
+            url (str): The full URL of the ComfyUI server (e.g., "http://127.0.0.1:8188").
+            server_address (str, optional): Deprecated. Use `url` instead.
+            https (bool, optional): Deprecated. Use `url` instead.
         """
-        self.server_address = server_address
-        self.https = https
-        self.url_prefix = "https://" if https else "http://"
-        self.base_url = f"{self.url_prefix}{self.server_address}"
+        if server_address:
+            # Backward compatibility
+            self.url_prefix = "https://" if https else "http://"
+            self.base_url = f"{self.url_prefix}{server_address}"
+        else:
+            # New URL handling
+            if not url.startswith("http"):
+                # Assume http if protocol is missing but user passed "127.0.0.1:8188"
+                url = f"http://{url}"
+            self.base_url = url.rstrip("/")
 
     def upload_image(self, image_path, overwrite=True):
         """

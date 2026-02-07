@@ -39,7 +39,7 @@ import json
 from comfyui_api import ComfyUiClient
 
 # 1. 初始化客户端
-client = ComfyUiClient(server_address="127.0.0.1:8188")
+client = ComfyUiClient(url="http://127.0.0.1:8188")
 
 # 2. 加载工作流
 # 你应该从 ComfyUI 中导出 "API 格式" 的工作流
@@ -74,11 +74,14 @@ for i, result in enumerate(results):
 ```python
 from comfyui_api import ComfyUiClient
 
-# 默认本地服务器
+# 默认本地服务器 (http://127.0.0.1:8188)
 client = ComfyUiClient() 
 
+# 指定 URL
+client = ComfyUiClient(url="http://127.0.0.1:8188")
+
 # 远程 HTTPS 服务器
-client = ComfyUiClient(server_address="my-comfyui-server.com:8188", https=True)
+client = ComfyUiClient(url="https://my-comfyui-server.com:8188")
 ```
 
 ### 2. 上传文件

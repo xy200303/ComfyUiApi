@@ -39,7 +39,7 @@ import json
 from comfyui_api import ComfyUiClient
 
 # 1. Initialize Client
-client = ComfyUiClient(server_address="127.0.0.1:8188")
+client = ComfyUiClient(url="http://127.0.0.1:8188")
 
 # 2. Load Workflow
 # You should export the workflow in "API Format" from ComfyUI
@@ -74,11 +74,14 @@ for i, result in enumerate(results):
 ```python
 from comfyui_api import ComfyUiClient
 
-# Default local server
+# Default local server (http://127.0.0.1:8188)
 client = ComfyUiClient() 
 
+# Specify URL
+client = ComfyUiClient(url="http://127.0.0.1:8188")
+
 # Remote server with HTTPS
-client = ComfyUiClient(server_address="my-comfyui-server.com:8188", https=True)
+client = ComfyUiClient(url="https://my-comfyui-server.com:8188")
 ```
 
 ### 2. Uploading Files
