@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comfyui_xy"
+version = "0.1.7"
+authors = [
+  { name="小云", email="3483421977@qq.com" },
+]
+description = "A Python client library for interacting with ComfyUI API"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests",
+    "Pillow",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/xy200303/ComfyUiApi"
+"Bug Tracker" = "https://github.com/xy200303/ComfyUiApi/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["comfyui_api*"]

@@ -1,0 +1,171 @@
+Metadata-Version: 2.4
+Name: comfyui_xy
+Version: 0.1.7
+Summary: A Python client library for interacting with ComfyUI API
+Author-email: 小云 <3483421977@qq.com>
+Project-URL: Homepage, https://github.com/xy200303/ComfyUiApi
+Project-URL: Bug Tracker, https://github.com/xy200303/ComfyUiApi/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: requests
+Requires-Dist: Pillow
+
+# ComfyUI API Client
+
+[English](README.md) | [中文](README_CN.md)
+
+A Python client library for interacting with [ComfyUI](https://github.com/comfyanonymous/ComfyUI) API. 
+This library provides a convenient wrapper to queue workflows, upload images/masks, and retrieve generated results (images, videos, audio, etc.) programmatically.
+
+## Features
+
+- **Workflow Management**: Queue workflows easily and wait for results.
+- **File Management**: Upload input images and masks directly to ComfyUI.
+- **Generic Output Handling**: Automatically handles various output types (Images, Videos/GIFs, Audio).
+- **Execution Control**: Interrupt running tasks, check queue status, and view history.
+- **Node Info**: Retrieve definitions for ComfyUI nodes.
+
+## Installation
+
+```bash
+pip install comfyui_xy
+```
+
+## How to Get Workflow JSON
+
+To use this API, you need the workflow in **API Format**, which is different from the standard JSON saved by ComfyUI.
+
+1. **Enable Dev Mode Options**:
+   - In ComfyUI web interface, click the **Settings** (gear icon) in the menu.
+   - Check the option **"Enable Dev mode Options"**.
+
+2. **Save as API Format**:
+   - Once Dev Mode is enabled, you will see a new button in the menu: **"Save (API Format)"**.
+   - Click this button to save your workflow as a JSON file (e.g., `workflow_api.json`).
+   - Use this JSON file with the `ComfyUiClient`.
+
+## Quick Start
+
+```python
+import json
+from comfyui_api import ComfyUiClient
+
+# 1. Initialize Client
+client = ComfyUiClient(server_address="127.0.0.1:8188")
+
+# 2. Load Workflow
+# You should export the workflow in "API Format" from ComfyUI
+with open("workflow_api.json", "r", encoding="utf-8") as f:
+    workflow = json.load(f)
+
+# 3. Modify Parameters (Optional)
+# e.g., Change the seed in KSampler (Node ID "3")
+import random
+workflow["3"]["inputs"]["seed"] = random.randint(1, 1000000000)
+
+# 4. Run Workflow
+print("Queueing workflow...")
+results = client.process_workflow(workflow)
+
+# 5. Handle Results
+for i, result in enumerate(results):
+    print(f"Received file: {result.filename} ({result.file_type})")
+    
+    # Save to disk
+    result.save(f"output_{i}_{result.filename}")
+    
+    # Show if it's an image
+    if result.file_type == "image":
+        result.show()
+```
+
+## Detailed Usage
+
+### 1. Initialization
+
+```python
+from comfyui_api import ComfyUiClient
+
+# Default local server
+client = ComfyUiClient() 
+
+# Remote server with HTTPS
+client = ComfyUiClient(server_address="my-comfyui-server.com:8188", https=True)
+```
+
+### 2. Uploading Files
+
+You can upload images or masks before running a workflow. These files are saved in the `input` directory of ComfyUI.
+
+```python
+# Upload an image
+# Returns the filename used by ComfyUI (useful for setting node inputs)
+image_name = client.upload_image("path/to/my_image.png")
+
+# Upload a mask
+mask_name = client.upload_mask("path/to/my_mask.png")
+
+# Example: Set the uploaded image in a LoadImage node (e.g., Node ID "10")
+workflow["10"]["inputs"]["image"] = image_name
+```
+
+### 3. Processing Workflows
+
+The `process_workflow` method is a high-level helper that:
+1. Queues the prompt.
+2. Waits for execution to finish.
+3. Downloads all generated files.
+
+```python
+results = client.process_workflow(workflow)
+```
+
+**Return Value:**
+It returns a list of `ComfyResponse` objects.
+
+### 4. Handling Responses (`ComfyResponse`)
+
+The `ComfyResponse` object wraps the raw data returned by ComfyUI.
+
+- **Attributes**:
+  - `data`: Raw bytes of the file.
+  - `filename`: Original filename on server.
+  - `file_type`: Type of file (e.g., 'image', 'video', 'audio').
+  - `image`: A `PIL.Image` object (if the file is a valid image).
+
+- **Methods**:
+  - `save(path=None)`: Save file to disk. If `path` is None, uses `filename`.
+  - `show()`: Opens the image in the default viewer (only for images).
+
+### 5. Advanced Controls
+
+**Interrupt Execution:**
+```python
+client.interrupt()
+```
+
+**Get System Status:**
+```python
+# Get Queue Status (Pending/Running tasks)
+queue_info = client.get_queue()
+
+# Get Full History
+history = client.get_history_all()
+
+# Get Node Information
+node_info = client.get_object_info("KSampler")
+```
+
+## Examples
+
+Check the [examples/](examples/) directory for more complete scripts:
+- `basic_workflow.py`: Simple Text-to-Image generation.
+- `image_to_image.py`: Uploading an image and processing it.
+- `advanced_control.py`: Inspecting queue and system info.
+
+## License
+
+MIT
